@@ -10,7 +10,6 @@ model = load_model("stock_prediction_model.h5")
 
 # Function to calculate difference in days while skipping Saturdays and Sundays
 def difference_in_days(input_date):
-    #reference_date = datetime.strptime("2022-12-30", "%Y-%m-%d")
     reference_date = datetime.today()
     input_date = datetime.strptime(input_date, "%Y-%m-%d")
     delta = timedelta(days=1)
@@ -25,10 +24,10 @@ def difference_in_days(input_date):
         return -(reference_date - input_date).days
 
 # Function to predict closing price for a given date
-def predict_closing_price(input_date):
+def predict_closing_price(input_date, selected_stock):
     days = difference_in_days(input_date)
     if days == 0:
-        df = pd.read_csv('ibm_stock_data.csv')
+        df = pd.read_csv(f'{selected_stock}_stock_data.csv')
         recent_closing_price = df.iloc[-1]['close']  # Assuming 'close' is the column name for closing price
         st.write(f"The most recent closing price: {recent_closing_price}")
         return
@@ -37,7 +36,7 @@ def predict_closing_price(input_date):
         return
     
     elif days >0 and days < 30:
-        df = pd.read_csv('ibm_stock_data.csv').tail(100)
+        df = pd.read_csv(f'{selected_stock}_stock_data.csv').tail(100)
         df1 = df.reset_index()
     
         df1 = df1['high']
@@ -70,7 +69,7 @@ def predict_closing_price(input_date):
         lst_output = scaler.inverse_transform(lst_output)
         st.write(f"Predicted Closing Price for {input_date}: {lst_output[days-1][0]}")
     else:
-        df = pd.read_csv('ibm_stock_data.csv')
+        df = pd.read_csv(f'{selected_stock}_stock_data.csv')
         try:
             fetched_date_high = df[df['Date'] == input_date]['high'].values[0]
         except IndexError:
@@ -84,6 +83,9 @@ def predict_closing_price(input_date):
 st.title("Stock Closing Price Predictor")
 st.write("Note: The input date should not be more than 30 days from today. Saturdays and Sundays are not valid input dates.")
 
+# Dropdown for selecting stock
+selected_stock = st.selectbox("Select Stock", ["ibm", "reliance"])
+
 # Date input from user
 input_date = st.date_input("Enter a date", datetime.today())
 
@@ -93,7 +95,7 @@ if input_date.weekday() >= 5:
 else:
     # Predict closing price when user submits the date
     if st.button("Predict Closing Price"):
-        predicted_price = predict_closing_price(str(input_date))
+        predicted_price = predict_closing_price(str(input_date), selected_stock)
         # st.write(f"Predicted Closing Price for {input_date}: {predicted_price}")
 
 st.write("""
@@ -101,6 +103,6 @@ st.write("""
 Taken From Quandl\n
 """)
 
-import pandas as pd
-df=pd.read_csv('ibm_stock_data.csv')
-st.write(df.tail(10))
+# Load and display recent data
+selected_df = pd.read_csv(f'{selected_stock}_stock_data.csv')
+st.write(selected_df.tail(10))
