@@ -166,6 +166,7 @@ plt.plot(day_pred, plot_lst_output, label="Predicted Data")
 plt.xlabel("Days")
 plt.ylabel("Closing Price")
 plt.title("Actual vs Predicted Closing Price")
+
 plt.legend()
 st.pyplot(plt)
 
