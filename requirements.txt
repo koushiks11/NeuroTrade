@@ -5,4 +5,5 @@ streamlit
 tensorflow
 openpyxl
 cryptocmd
+sklearn
 xlsxwriter
