@@ -1,0 +1,8 @@
+beautifulsoup4
+pandas
+Requests
+streamlit
+tensorflow
+openpyxl
+cryptocmd
+xlsxwriter
