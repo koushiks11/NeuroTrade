@@ -113,7 +113,7 @@ def predict_closing_price(input_date, selected_stock):
 
 # Sidebar
 # st.sidebar.title('📉📈 ')
-selected_stock = st.sidebar.selectbox("Select Stock", ["IBM", "Reliance", "Accenture", "Amazon", "Atlassian", "Dell", "GoldmanSachs", "Infosys", "JPMorgan", "Microsoft", "Nvidia", "Oracle", "Tesla", "Wipro"])
+selected_stock = st.sidebar.selectbox("Select Stock", ["IBM", "Reliance", "Accenture", "Amazon", "Atlassian", "Dell", "GoldmanSachs", "Infosys", "JPMorgan", "Microsoft", "Nvidia", "Oracle", "Tesla", "Wipro"]).lower()
 input_date = st.sidebar.date_input("Enter a date", datetime.today(),help="**Note: The input date should not be more than 30 days from today. Saturdays and Sundays are not valid input dates.**")
 
 if input_date.weekday() >= 5:
