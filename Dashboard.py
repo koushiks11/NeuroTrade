@@ -2,7 +2,9 @@ import streamlit as st
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
-from tensorflow.keras.models import load_model
+from tensorflow import keras
+from keras.layers import Dense
+from keras.models import Sequential, load_model
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 import altair as alt
