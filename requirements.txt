@@ -3,7 +3,5 @@ pandas
 Requests
 streamlit
 tensorflow
-openpyxl
-cryptocmd
 sklearn
-xlsxwriter
+numpy
