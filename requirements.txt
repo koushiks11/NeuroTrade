@@ -5,3 +5,6 @@ streamlit
 tensorflow
 scikit-learn
 numpy
+matplotlib
+altair
+plotly
