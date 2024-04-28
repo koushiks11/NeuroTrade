@@ -181,7 +181,7 @@ with col[0]:
     # Create containers for recent closing price and high price
     with st.container():
         st.markdown(
-            f"<div style='border: 1px solid pink; padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
+            f"<div style='border: 2px solid pink; padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
             f"Recent Price"
             f"<br>"
             f"<span style='font-size: 24px; color: Red;'>{latest_closing_price}</span>"
@@ -191,7 +191,7 @@ with col[0]:
 
     with st.container():
         st.markdown(
-            f"<div style='border: 1px solid pink; padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
+            f"<div style='border: 2px solid pink; padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
             f"Highest Price"
             f"<br>"
             f"<span style='font-size: 24px; color: Green;'>{latest_high_price}</span>"

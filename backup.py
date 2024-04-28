@@ -1,6 +1,3 @@
-0LWURRJDVQXKTZLK
-
-
 import streamlit as st
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
@@ -137,13 +134,15 @@ if st.button('Analyze Sentiment'):
     # If the checkbox is checked, display titles with compound scores
     if display_scores:
         st.write('Titles with Compound Scores:')
-        titles_with_scores = parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))
-        compound_scores = calculate_sentiment_scores(titles_with_scores)
-        
+        titles = parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))
+        compound_scores = calculate_sentiment_scores(titles)
+
         # Create a DataFrame for displaying titles and compound scores
-        df_titles = pd.DataFrame({'Title': titles_with_scores, 'Compound Score': compound_scores})
-        st.table(df_titles.reset_index(drop=True).reset_index().rename(columns={'index': 'Serial Number'}))  # Display titles in a table format
+        df_titles = pd.DataFrame({'Serial No.': list(range(1, len(titles) + 1)), 'Title': titles, 'Compound Score': compound_scores})
+        st.table(df_titles.set_index('Serial No.'))  # Display titles in a table format
     else:
-        st.write('Titles:')
+        st.write('### News Articles')
         titles_only = parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))
-        st.table(pd.DataFrame({'Title': titles_only}))  # Display titles in a table format
+        # Create a DataFrame for displaying titles
+        df_titles = pd.DataFrame({'Serial No.': list(range(1, len(titles_only) + 1)), 'Title': titles_only})
+        st.table(df_titles.set_index('Serial No.'))  # Display titles in a table format

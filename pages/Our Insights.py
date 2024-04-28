@@ -1,6 +1,3 @@
-0LWURRJDVQXKTZLK
-
-
 import streamlit as st
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
@@ -8,8 +5,36 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
+import matplotlib.pyplot as plt
+import altair as alt
+import plotly.graph_objs as go
+import plotly.express as px
 import base64
 
+
+
+# Page configuration
+st.set_page_config(
+    page_title="Stock Sentiment Analysis",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+alt.themes.enable("dark")
+
+# Add custom CSS to apply padding-top: 25px
+st.markdown(
+    """
+    <style>
+    .block-container.st-emotion-cache-z5fcl4.ea3mdgi5 {
+        padding-top: 20px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Function to get news data from Finviz
 def get_news_data(tickers):
     finviz_url = 'https://finviz.com/quote.ashx?t='
     news_tables = {}
@@ -32,6 +57,7 @@ def get_news_data(tickers):
 
     return news_tables
 
+# Function to parse news data
 def parse_news_data(news_tables):
     top_titles = []
     for ticker, news_table in news_tables.items():
@@ -45,6 +71,7 @@ def parse_news_data(news_tables):
     
     return top_titles
 
+# Function to calculate sentiment scores
 def calculate_sentiment_scores(titles):
     vader = SentimentIntensityAnalyzer()
     compound_scores = []
@@ -55,6 +82,7 @@ def calculate_sentiment_scores(titles):
 
     return compound_scores
 
+# Function to plot sentiment
 def plot_sentiment(tickers, compound_scores):
     sentiments = ['Strongly Sell', 'Sell', 'Neutral', 'Buy', 'Strongly Buy']
     categories = pd.cut(compound_scores, bins=[-1, -0.5, -0.1, 0.1, 0.5, 1.0], labels=sentiments)
@@ -119,31 +147,35 @@ tickers_list = list(ticker_mapping.keys())
 ticker_values = list(ticker_mapping.values())
 
 # Dropdown menu for selecting ticker symbol
-selected_ticker_index = st.selectbox('Select Ticker Symbol', tickers_list)
+selected_ticker_index = st.selectbox('Select Stock', tickers_list)
 
 # Checkbox to toggle display of compound scores
 display_scores = st.checkbox('Display Compound Scores')
 
 # Button to trigger sentiment analysis
-if st.button('Analyze Sentiment'):
-    st.write(f'Analyzing sentiment for {selected_ticker_index}...')
-    
-    # Call the backend function with the selected ticker value
-    img_buffer = plot_sentiment([ticker_mapping[selected_ticker_index]], calculate_sentiment_scores(parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))))
-    
-    # Display the image in Streamlit
-    st.image(img_buffer, caption='Sentiment Analysis Plot', use_column_width=True)
-
-    # If the checkbox is checked, display titles with compound scores
-    if display_scores:
-        st.write('Titles with Compound Scores:')
-        titles_with_scores = parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))
-        compound_scores = calculate_sentiment_scores(titles_with_scores)
+analyze_button_clicked = st.button('Analyze Sentiment')
+if analyze_button_clicked:
+    with st.spinner('Analyzing sentiment...'):
         
-        # Create a DataFrame for displaying titles and compound scores
-        df_titles = pd.DataFrame({'Title': titles_with_scores, 'Compound Score': compound_scores})
-        st.table(df_titles.reset_index(drop=True).reset_index().rename(columns={'index': 'Serial Number'}))  # Display titles in a table format
-    else:
-        st.write('Titles:')
-        titles_only = parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))
-        st.table(pd.DataFrame({'Title': titles_only}))  # Display titles in a table format
+        # Call the backend function with the selected ticker value
+        img_buffer = plot_sentiment([ticker_mapping[selected_ticker_index]], calculate_sentiment_scores(parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))))
+        
+        # Display the image in Streamlit
+        st.image(img_buffer, caption='Sentiment Analysis Plot', use_column_width=True)
+
+        # If the checkbox is checked, display titles with compound scores
+        if display_scores:
+            st.write('Titles with Compound Scores:')
+            titles = parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))
+            compound_scores = calculate_sentiment_scores(titles)
+
+            # Create a DataFrame for displaying titles and compound scores
+            df_titles = pd.DataFrame({'Serial No.': list(range(1, len(titles) + 1)), 'Title': titles, 'Compound Score': compound_scores})
+            st.table(df_titles.set_index('Serial No.', drop=True))  # Display titles in a table format without the index column
+        else:
+            st.write('### News Articles')
+            titles_only = parse_news_data(get_news_data([ticker_mapping[selected_ticker_index]]))
+            # Create a DataFrame for displaying titles
+            df_titles = pd.DataFrame({'Serial No.': list(range(1, len(titles_only) + 1)), 'Title': titles_only})
+            st.table(df_titles.set_index('Serial No.', drop=True))  # Display titles in a table format without the index column
+
