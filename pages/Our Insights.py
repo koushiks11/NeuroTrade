@@ -50,7 +50,6 @@ def get_news_data(tickers):
 
             if news_table is not None:
                 news_tables[ticker] = news_table
-                print(news_table)
             else:
                 print(f"No news table found for {ticker}.")
         except Exception as e:
@@ -61,15 +60,13 @@ def get_news_data(tickers):
 # Function to parse news data
 def parse_news_data(news_tables):
     top_titles = []
+    print(news_tables)
     for ticker, news_table in news_tables.items():
         for row in news_table.findAll('tr'):
-
             title = row.a.text
-            
-            if title is not None:
-                top_titles.append(title)
-                if len(top_titles) == 10:
-                    break
+            top_titles.append(title)
+            if len(top_titles) == 10:
+                break
         if len(top_titles) == 10:
             break
     
