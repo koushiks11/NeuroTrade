@@ -50,6 +50,7 @@ def get_news_data(tickers):
 
             if news_table is not None:
                 news_tables[ticker] = news_table
+                print(news_table)
             else:
                 print(f"No news table found for {ticker}.")
         except Exception as e:
