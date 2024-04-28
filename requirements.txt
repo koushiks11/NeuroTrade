@@ -3,5 +3,5 @@ pandas
 Requests
 streamlit
 tensorflow
-sklearn
+scikit-learn
 numpy
