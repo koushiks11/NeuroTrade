@@ -3,21 +3,167 @@ from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 from tensorflow import keras
-from keras.layers import Dense
 from keras.models import Sequential, load_model
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 import altair as alt
 import plotly.graph_objs as go
 import plotly.express as px
+import time
 
-# Page configuration
+
+css = """
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fade-in {
+  animation: fadeIn 2s ease forwards;
+}
+
+.note {
+    background-color: #f0f0f0;
+    color: black;  /* Changed text color to black */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    max-width: 500px;
+    position: relative;
+}
+
+.note::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
+    top: 50%;
+    left: -20px;
+    transform: translateY(-50%);
+}
+"""
+
 st.set_page_config(
     page_title="Stock Prediction Dashboard",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+@st.cache_data()
+def display_landing_page(dummy_input):
+    # Landing page with fade-in animation
+    with st.spinner("Loading..."):
+        placeholder = st.empty()
+        placeholder.markdown(
+            """
+            <style>
+            @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+            }
+
+            .fade-in {
+            animation: fadeIn 2s ease forwards;
+            }
+            </style>
+
+            <div style='text-align: center; opacity: 0; animation: fadeIn 2s ease forwards;'>
+                <h1 style='margin-top: 100px; font-size: 36px;'><b style='color: red'>NOTE</b>: This website is built For Educational Purposes Only</h1>
+                <p style='font-size: 18px;'>This website and its content are intended for educational purposes only. The information provided here is for general informational purposes and should not be construed as investment advice. We do not endorse or recommend any specific stocks or trading strategies.</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        time.sleep(3)
+        placeholder.empty()
+
+
+    placeholder = st.markdown(
+        """
+        <style>
+        .overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .note {
+            background-color: #f0f0f0;
+            color: black;  /* Changed text color to black */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .note::before {
+            content: "";
+            position: absolute;
+            width: 40px;
+            height: 30px;
+            background-color: red;
+            clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
+            top: 50%;
+            left: -40px;
+            transform: translateY(-50%);
+        }
+
+        .fade-in {
+        animation: fadeIn 2s ease forwards;
+        }
+        </style>
+
+        <div class="overlay fade-in">
+            <div class="note" style='text-align: center; opacity: 1;'>
+                <p style='font-size: 18px;'>To use the dashboard, You have to select a stock from the dropdown menu in the sidebar. Choose a date and click 'Predict Closing Price' to see the predicted closing price. </p>
+            </div>
+        </div>
+        """
+        , unsafe_allow_html=True
+    )
+    time.sleep(5)
+    placeholder.empty()
+
+
+# Check if the landing page has already been displayed
+if not display_landing_page("dummy_input"):
+    # Display the landing page
+    display_landing_page("dummy_input")
+    
+
+# Actual Dashboard code
 alt.themes.enable("dark")
 
 # Add custom CSS to apply padding-top: 25px
@@ -33,7 +179,6 @@ st.markdown(
 )
 
 st.title("Stock Prediction Dashboard")
-
 
 selected_stock = "IBM"
 input_date = datetime.today()
@@ -113,8 +258,7 @@ def predict_closing_price(input_date, selected_stock):
 
 # Sidebar
 # st.sidebar.title('📉📈 ')
-selected_stock = st.sidebar.selectbox("Select Stock", ["Ibm", "Reliance", "Accenture", "Amazon", "Atlassian", "Dell", "GoldmanSachs", "Infosys", "JPMorgan", "Microsoft", "Nvidia", "Oracle", "Tesla", "Wipro"])
-selected_stock = selected_stock.lower()
+selected_stock = st.sidebar.selectbox("Select Stock", ["IBM", "Reliance", "Accenture", "Amazon", "Atlassian", "Dell", "GoldmanSachs", "Infosys", "JPMorgan", "Microsoft", "Nvidia", "Oracle", "Tesla", "Wipro"])
 input_date = st.sidebar.date_input("Enter a date", datetime.today(),help="**Note: The input date should not be more than 30 days from today. Saturdays and Sundays are not valid input dates.**")
 
 if input_date.weekday() >= 5:
@@ -122,6 +266,7 @@ if input_date.weekday() >= 5:
 else:
     if st.sidebar.button("Predict Closing Price"):
         lst_output = predict_closing_price(str(input_date), selected_stock)
+
 
 
 
@@ -176,6 +321,13 @@ day_range_predicted = pd.date_range(start=datetime.today() + timedelta(days=1), 
 actual_df = pd.DataFrame({'Date': day_range_actual, 'Closing Price': actual_data})
 predicted_df = pd.DataFrame({'Date': day_range_predicted, 'Closing Price': predicted_data})
 
+# Fetching opening prices
+opening_data = df.set_index('Date')['open']
+# Creating DataFrame for opening prices
+opening_df = pd.DataFrame({'Date': day_range_actual, 'Opening Price': opening_data})
+
+# Adding a toggle button for displaying only opening price plot
+show_opening_price = st.checkbox("Show Opening Price Plot", False)
 
 col = st.columns((1.5, 4.5, 2), gap='medium')
 
@@ -187,17 +339,17 @@ with col[0]:
     # Create containers for recent closing price and high price
     with st.container():
         st.markdown(
-            f"<div style='border: 2px solid pink; padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
+            f"<div style='border: 2px solid rgb(246, 51, 102); padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
             f"<b>Recent Price</b>"
             f"<br>"
-            f"<b><span style='font-size: 24px; color: Red;'>{latest_closing_price}</span>"
+            f"<b><span style='font-size: 24px; color: rgb(0, 104, 201);'>{latest_closing_price}</span>"
             f"</div>",
             unsafe_allow_html=True
         )
 
     with st.container():
         st.markdown(
-            f"<div style='border: 2px solid pink; padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
+            f"<div style='border: 2px solid rgb(246, 51, 102); padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
             f"<b>Highest Price</b>"
             f"<br>"
             f"<b><span style='font-size: 24px; color: Green;'>{latest_high_price}</span>"
@@ -206,10 +358,13 @@ with col[0]:
         )
 
 with col[1]:
-    fig = px.line(title="Actual vs Predicted Closing Price")
-    fig.add_scatter(x=actual_df['Date'], y=actual_df['Closing Price'], mode='lines', name='Actual Data')
-    fig.add_scatter(x=predicted_df['Date'], y=predicted_df['Closing Price'], mode='lines', name='Predicted Data')
-    fig.update_layout(xaxis_title="Date", yaxis_title="Closing Price", legend_title="Data Type")
+    # Adding both opening and closing prices to the Plotly figure
+    fig = px.line(title="Actual vs Predicted Closing")
+    if show_opening_price:
+        fig.add_scatter(x=opening_df['Date'], y=opening_df['Opening Price'], mode='lines', name='Actual Opening Price', line=dict(color='orange'))
+    fig.add_scatter(x=actual_df['Date'], y=actual_df['Closing Price'], mode='lines', name='Actual Closing Price',line=dict(color='rgb(246, 51, 102)'))
+    fig.add_scatter(x=predicted_df['Date'], y=predicted_df['Closing Price'], mode='lines', name='Predicted Closing Price')
+    fig.update_layout(xaxis_title="Date", yaxis_title="Price", legend_title="Data Type", title="Actual vs Predicted Closing and Opening Price")
     st.plotly_chart(fig)
 
 
@@ -218,3 +373,4 @@ st.write("""
 Taken From Quandl\n**
 """)
 st.write(df1.tail(10))
+
