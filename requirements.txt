@@ -12,3 +12,4 @@ nltk
 urlopen
 torch
 transformers
+vader
