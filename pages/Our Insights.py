@@ -15,7 +15,7 @@ import urllib.request
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 
-nltk.data.path.append("c:\users\user\appdata\local\programs\python\python311\lib\site-packages")
+nltk.data.path.append("c:/users/user/appdata/local/programs/python/python311/lib/site-packages")
 
 # Page configuration
 st.set_page_config(
