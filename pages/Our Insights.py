@@ -63,8 +63,10 @@ def parse_news_data(news_tables):
     top_titles = []
     for ticker, news_table in news_tables.items():
         for row in news_table.findAll('tr'):
-            title = row.a.text
-            top_titles.append(title)
+            title_tag = row.a
+            if title_tag:
+                title = title_tag.text
+                top_titles.append(title)
             if len(top_titles) == 10:
                 break
         if len(top_titles) == 10:
