@@ -1,6 +1,7 @@
 import streamlit as st
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
+import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,6 +14,9 @@ import base64
 import urllib.request
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
+
+# Download NLTK data files
+nltk.download('vader_lexicon')
 
 # Page configuration
 st.set_page_config(
