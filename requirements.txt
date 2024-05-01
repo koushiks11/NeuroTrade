@@ -10,3 +10,4 @@ altair
 plotly
 nltk
 urlopen
+torch
