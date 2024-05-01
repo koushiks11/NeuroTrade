@@ -1,7 +1,7 @@
 import streamlit as st
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
-import nltk
+import pack
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -15,7 +15,7 @@ import urllib.request
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 
-nltk.data.path.append("c:/users/user/appdata/local/programs/python/python311/lib/site-packages")
+pack.data.path.append("c:/users/user/appdata/local/programs/python/python311/lib/site-packages")
 
 # Page configuration
 st.set_page_config(
