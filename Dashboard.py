@@ -162,6 +162,7 @@ plot_lst_output = scaler.inverse_transform(plot_lst_output)
 
 num_days_to_display = st.slider("Number of days to display", min_value=50, max_value=500, value=100, step=25)
 df = pd.read_csv(f'{selected_stock}_stock_data.csv').tail(num_days_to_display)
+latest_date = pd.to_datetime(df['Date']).max()
 df1 = df.reset_index()
 scaler = MinMaxScaler(feature_range=(0, 1))
 df1['Scaled High'] = scaler.fit_transform(np.array(df1['high']).reshape(-1, 1))
@@ -169,11 +170,12 @@ df1['Scaled High'] = scaler.fit_transform(np.array(df1['high']).reshape(-1, 1))
 actual_data = df1['high'].values
 predicted_data = plot_lst_output.flatten()
 
-day_range_actual = pd.date_range(end=datetime.today(), periods=num_days_to_display).strftime('%Y-%m-%d')
+day_range_actual = pd.date_range(end=latest_date, periods=num_days_to_display).strftime('%Y-%m-%d')
 day_range_predicted = pd.date_range(start=datetime.today() + timedelta(days=1), periods=len(predicted_data)).strftime('%Y-%m-%d')
 
 actual_df = pd.DataFrame({'Date': day_range_actual, 'Closing Price': actual_data})
 predicted_df = pd.DataFrame({'Date': day_range_predicted, 'Closing Price': predicted_data})
+
 
 col = st.columns((1.5, 4.5, 2), gap='medium')
 
@@ -208,13 +210,11 @@ with col[1]:
     fig.add_scatter(x=actual_df['Date'], y=actual_df['Closing Price'], mode='lines', name='Actual Data')
     fig.add_scatter(x=predicted_df['Date'], y=predicted_df['Closing Price'], mode='lines', name='Predicted Data')
     fig.update_layout(xaxis_title="Date", yaxis_title="Closing Price", legend_title="Data Type")
-
-    latest_closing_price = df1.iloc[-1]['high']
     st.plotly_chart(fig)
+
 
 st.write("""
 **# Recent Data:
 Taken From Quandl\n**
 """)
 st.write(df1.tail(10))
-
