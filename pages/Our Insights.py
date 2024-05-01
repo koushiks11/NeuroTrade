@@ -15,9 +15,6 @@ import urllib.request
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 
-# Download NLTK data files
-nltk.download('vader_lexicon')
-
 # Page configuration
 st.set_page_config(
     page_title="Stock Sentiment Analysis",
