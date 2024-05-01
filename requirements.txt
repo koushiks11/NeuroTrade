@@ -11,3 +11,4 @@ plotly
 nltk
 urlopen
 torch
+transformers
