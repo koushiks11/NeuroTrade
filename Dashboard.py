@@ -343,7 +343,7 @@ with col[0]:
             f"<div style='border: 2px solid rgb(246, 51, 102); padding: 3px; text-align: center; color: white; width: auto; height: 150px; padding-top: 25%; border-radius: 10px; margin-top: 15px'>"
             f"<b>Recent Price</b>"
             f"<br>"
-            f"<b><span style='font-size: 24px; color: rgb(0, 104, 201);'>{latest_closing_price}</span>"
+            f"<b><span style='font-size: 24px; color: rgb(255, 0, 0);'>{latest_closing_price}</span>"
             f"</div>",
             unsafe_allow_html=True
         )
@@ -362,9 +362,13 @@ with col[1]:
     # Adding both opening and closing prices to the Plotly figure
     fig = px.line(title="Actual vs Predicted Closing")
     if show_opening_price:
-        fig.add_scatter(x=opening_df['Date'], y=opening_df['Opening Price'], mode='lines', name='Actual Opening Price', line=dict(color='orange'))
-    fig.add_scatter(x=actual_df['Date'], y=actual_df['Closing Price'], mode='lines', name='Actual Closing Price',line=dict(color='rgb(246, 51, 102)'))
-    fig.add_scatter(x=predicted_df['Date'], y=predicted_df['Closing Price'], mode='lines', name='Predicted Closing Price')
+        fig.add_scatter(x=opening_df['Date'], y=opening_df['Opening Price'], mode='lines', name='Actual Opening Price',text="Actual Opening Price", line=dict(color='orange'))
+    fig.add_scatter(x=actual_df['Date'], y=actual_df['Closing Price'], mode='lines', name='Actual Closing Price',text="Actual Closing Price",line=dict(color='rgb(246, 51, 102)'))
+    
+    # Determine color based on predicted trend
+    pred_trend_color = 'green' if predicted_data[-1] > actual_data[-1] else 'red'
+    fig.add_scatter(x=predicted_df['Date'], y=predicted_df['Closing Price'], mode='lines', name='Predicted Closing Price',text="Predicted Closing Price", line=dict(color=pred_trend_color))
+    
     fig.update_layout(xaxis_title="Date", yaxis_title="Price", legend_title="Data Type", title="Actual vs Predicted Closing and Opening Price")
     st.plotly_chart(fig)
 
