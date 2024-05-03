@@ -15,7 +15,7 @@ import urllib.request
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
 
-nltk.download('vader_lexicon')
+# nltk.download('vader_lexicon')
 
 # Page configuration
 st.set_page_config(
